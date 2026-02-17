@@ -247,13 +247,20 @@
             a tu celebración.
         </p>
         
-        <form action="guardar.php" method="POST" class="formulario-cta">
-            <input type="text" name="nombre" placeholder="Nombre completo" required>
-            <input type="email" name="email" placeholder="Correo electrónico" required>
-            <input type="text" name="telefono" placeholder="Teléfono">
-            <textarea name="mensaje" placeholder="Cuéntanos sobre tu evento..." required></textarea>
-            <button type="submit">Solicitar Cotización</button>
+        <form id="contactForm">
+
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_subject" value="Nueva cotización - Sentimiento Latino">
+            <input type="hidden" name="_template" value="table">
+        
+            <input type="text" name="Nombre" placeholder="Tu nombre" required>
+            <input type="email" name="Correo" placeholder="Tu correo" required>
+            <textarea name="Mensaje" placeholder="Escríbenos tu mensaje" required></textarea>
+        
+            <button type="submit">Solicitar cotización</button>
+        
         </form>
+
     </div>
 
 </section>
@@ -307,37 +314,48 @@
 </footer>
 
 <script>
-window.addEventListener("DOMContentLoaded", function() {
+const form = document.getElementById("contactForm");
+const toastContainer = document.getElementById("toast");
 
-    const params = new URLSearchParams(window.location.search);
-    const estado = params.get("estado");
+form.addEventListener("submit", function(e) {
+    e.preventDefault();
 
-    if(estado) {
-        const toastContainer = document.getElementById("toast");
-        const toast = document.createElement("div");
+    const formData = new FormData(form);
 
-        toast.classList.add("toast");
+    fetch("https://formsubmit.co/ajax/alejo654321.jaak@gmail.com", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        showToast("Mensaje enviado correctamente 🎶", "success");
+        form.reset();
+    })
+    .catch(error => {
+        showToast("Error al enviar. Intenta nuevamente.", "error");
+    });
+});
 
-        if(estado === "ok") {
-            toast.classList.add("toast-success");
-            toast.innerText = "Mensaje enviado correctamente";
-        }
+function showToast(message, type) {
+    const toast = document.createElement("div");
+    toast.classList.add("toast");
 
-        if(estado === "error") {
-            toast.classList.add("toast-error");
-            toast.innerText = "Error al enviar el mensaje";
-        }
-
-        toastContainer.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-            window.history.replaceState({}, document.title, "index.php#contacto");
-        }, 1500);
+    if(type === "success") {
+        toast.classList.add("toast-success");
+    } else {
+        toast.classList.add("toast-error");
     }
 
-});
+    toast.innerText = message;
+    toastContainer.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+        window.history.replaceState({}, document.title, "index.php#contacto");
+    }, 1400);
+}
 </script>
+
 
 
 <script src="js/main.js"></script>
@@ -348,3 +366,4 @@ AOS.init();
 
 </body>
 </html>
+
